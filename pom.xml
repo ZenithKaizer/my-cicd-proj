@@ -3,12 +3,11 @@
   <groupId>univers</groupId>
   <artifactId>my-cicd-proj</artifactId>
   <packaging>war</packaging>
-  <version>1.0.0</version>
+  <version>1.0.0-SNAPSHOT</version>
   <name>my-cicd-proj Maven Webapp</name>
   <url>http://maven.apache.org</url>
   <scm>
     <developerConnection>scm:git:https://ZenithKaizer:JordanDavid03@github.com/ZenithKaizer/my-cicd-proj/</developerConnection>
-    <tag>1.0.0</tag>
   </scm>
   <dependencies>
     <dependency>
