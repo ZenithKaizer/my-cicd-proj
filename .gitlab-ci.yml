@@ -1,11 +1,9 @@
 image: maven:3.3.9-jdk-8
 
 stages:
-  - nightly_build
-  - start_release
-  - start_bugfix
-  - end_bugfix
-  - end_release
+  - build
+  - bugfix
+  - release
 
 
 .build_template: &build_definition 
@@ -14,26 +12,25 @@ stages:
   when: manual
   
 nightly_build:
-  <<: *build_definition 
-  only:
+   <<: *build_definition
+   stage: build
+   only:
     - develop
-    
+ 
 start_release:
-  <<: *build_definition 
-  only:
+   <<: *build_definition
+   stage: bugfix
+   only:
     - develop
-    
-start_bugfix:
-  <<: *build_definition 
-  only:
+
+publish_bugfix:
+   <<: *build_definition
+   stage: bugfix
+   only:
     - preprod
-    
-end_bugfix:
-  <<: *build_definition 
-  only:
-    - preprod
-    
+
 end_release:
-  <<: *build_definition 
-  only:
+   <<: *build_definition
+   stage: release
+   only:
     - preprod
