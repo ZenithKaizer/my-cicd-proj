@@ -10,6 +10,7 @@ Compile source:
   stage: compile
   script:
     - mvn compile
+  when: manual
 
 Unit tests:
   stage: tests
