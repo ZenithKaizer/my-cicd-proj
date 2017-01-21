@@ -1,0 +1,42 @@
+
+stages:
+  - compile
+  - tests
+  - package
+  - release
+
+Compile source:
+  stage: compile
+  script:
+    - mvn compile
+
+Unit tests:
+  stage: tests
+  script:
+    - mvn test
+  
+
+Build bundle:
+  stage: package
+  script: "mvn package -Dmaven.test.skip=true"
+
+Snapshot develop:
+  stage: release
+  script: "mvn deploy -Dartifactory.username=$AF_API_USR -Dartifactory.password=$AF_API_TKN -Dmaven.test.skip=true"
+  only:
+    - develop
+
+Snapshot preprod:
+  stage: release
+  script:
+    - oldArtifactId=$(sed -n "/<version>/p" pom.xml | head -1 | sed 's/<version>//g' | sed 's/<\/version>//g' | sed 's/[[:blank:]]//g')
+    - if [[ $oldArtifactId == *"SNAPSHOT"* ]]; then mvn deploy -Dartifactory.username=$AF_API_USR -Dartifactory.password=$AF_API_TKN -Dmaven.test.skip=true; fi
+  only:
+    - preprod
+
+Release:
+  stage: release
+  script: "mvn deploy -Dartifactory.username=$AF_API_USR -Dartifactory.password=$AF_API_TKN -Dmaven.test.skip=true"
+  only:
+    - tags
+  when: manual
