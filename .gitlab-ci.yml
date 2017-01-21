@@ -13,22 +13,27 @@ stages:
     - "mvn compile test package "
   when: manual
   
-nightly_build:  
+nightly_build:
+  <<: *build_definition 
   only:
     - develop
     
 start_release:
+  <<: *build_definition 
   only:
     - develop
     
-start_bugfix
+start_bugfix:
+  <<: *build_definition 
   only:
     - preprod
     
-end_bugfix
+end_bugfix:
+  <<: *build_definition 
   only:
     - preprod
     
 end_release:
+  <<: *build_definition 
   only:
     - preprod
