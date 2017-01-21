@@ -1,43 +1,34 @@
 image: maven:3.3.9-jdk-8
 
 stages:
-  - compile
-  - tests
-  - package
-  - release
+  - nightly_build
+  - start_release
+  - start_bugfix
+  - end_bugfix
+  - end_release
 
-Compile source:
-  stage: compile
-  script:
-    - mvn compile
 
-Unit tests:
-  stage: tests
+.build_template: &build_definition 
   script:
-    - mvn test
+    - "mvn compile test package "
+  when: manual
   
-
-Build bundle:
-  stage: package
-  script: "mvn package -Dmaven.test.skip=true"
-
-Snapshot develop:
-  stage: release
-  script: "mvn deploy -Dartifactory.username=$AF_API_USR -Dartifactory.password=$AF_API_TKN -Dmaven.test.skip=true"
+nightly_build:  
   only:
     - develop
-
-Snapshot preprod:
-  stage: release
-  script:
-    - oldArtifactId=$(sed -n "/<version>/p" pom.xml | head -1 | sed 's/<version>//g' | sed 's/<\/version>//g' | sed 's/[[:blank:]]//g')
-    - if [[ $oldArtifactId == *"SNAPSHOT"* ]]; then mvn deploy -Dartifactory.username=$AF_API_USR -Dartifactory.password=$AF_API_TKN -Dmaven.test.skip=true; fi
+    
+start_release:
+  only:
+    - develop
+    
+start_bugfix
   only:
     - preprod
-
-Release:
-  stage: release
-  script: "mvn deploy -Dartifactory.username=$AF_API_USR -Dartifactory.password=$AF_API_TKN -Dmaven.test.skip=true"
+    
+end_bugfix
   only:
-    - tags
-  when: manual
+    - preprod
+    
+end_release:
+  only:
+    - preprod
