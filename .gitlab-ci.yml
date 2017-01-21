@@ -1,5 +1,8 @@
 image: maven:3.3.9-jdk-8
 
+variables:
+  MAVEN_OPTS: -Dmaven.repo.local=/cache/maven.repository
+
 stages:
   - compile
   - tests
@@ -16,17 +19,19 @@ Unit tests:
   stage: tests
   script:
     - mvn test
-  
+  when: manual
 
 Build bundle:
   stage: package
   script: "mvn package -Dmaven.test.skip=true"
+  when: manual
 
 Snapshot develop:
   stage: release
   script: "mvn deploy -Dartifactory.username=$AF_API_USR -Dartifactory.password=$AF_API_TKN -Dmaven.test.skip=true"
   only:
     - develop
+  when: manual
 
 Snapshot preprod:
   stage: release
