@@ -1,49 +1,36 @@
 image: maven:3.3.9-jdk-8
 
-variables:
-  MAVEN_OPTS: -Dmaven.repo.local=/cache/maven.repository
-
 stages:
-  - compile
-  - tests
-  - package
+  - build
+  - bugfix
   - release
 
-Compile source:
-  stage: compile
+
+.build_template: &build_definition 
   script:
-    - mvn compile
+    - "mvn compile test package "
   when: manual
-
-Unit tests:
-  stage: tests
-  script:
-    - mvn test
-  when: manual
-
-Build bundle:
-  stage: package
-  script: "mvn package -Dmaven.test.skip=true"
-  when: manual
-
-Snapshot develop:
-  stage: release
-  script: "mvn deploy -Dartifactory.username=$AF_API_USR -Dartifactory.password=$AF_API_TKN -Dmaven.test.skip=true"
-  only:
+  
+nightly_build:
+   <<: *build_definition
+   stage: build
+   only:
     - develop
-  when: manual
+ 
+start_release:
+   <<: *build_definition
+   stage: bugfix
+   only:
+    - develop
 
-Snapshot preprod:
-  stage: release
-  script:
-    - oldArtifactId=$(sed -n "/<version>/p" pom.xml | head -1 | sed 's/<version>//g' | sed 's/<\/version>//g' | sed 's/[[:blank:]]//g')
-    - if [[ $oldArtifactId == *"SNAPSHOT"* ]]; then mvn deploy -Dartifactory.username=$AF_API_USR -Dartifactory.password=$AF_API_TKN -Dmaven.test.skip=true; fi
-  only:
+publish_bugfix:
+   <<: *build_definition
+   stage: bugfix
+   only:
     - preprod
 
-Release:
-  stage: release
-  script: "mvn deploy -Dartifactory.username=$AF_API_USR -Dartifactory.password=$AF_API_TKN -Dmaven.test.skip=true"
-  only:
-    - tags
-  when: manual
+end_release:
+   <<: *build_definition
+   stage: release
+   only:
+    - preprod
