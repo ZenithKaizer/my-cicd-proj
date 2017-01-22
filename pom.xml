@@ -7,7 +7,7 @@
   <name>my-cicd-proj Maven Webapp</name>
   <url>http://maven.apache.org</url>
   <scm>
-    <developerConnection>scm:git:https://ZenithKaizer:JordanDavid03@github.com/ZenithKaizer/my-cicd-proj/</developerConnection>
+    <developerConnection>scm:git:git@gitlab-server:lab-gitlab/my-cicd-proj.git</developerConnection>
     <tag>release</tag>
   </scm>
   <dependencies>
